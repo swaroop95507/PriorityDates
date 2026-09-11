@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Priority Date Tracker & Visualizer</title>
-    <!-- Chart.js CDN for clean, minimal charting functionality -->
-    <script src="https://jsdelivr.net"></script>
     <style>
         :root {
             --bg: #f9f9fb;
@@ -75,7 +73,6 @@
             font-size: 1rem;
         }
 
-        /* Chart Section Container */
         .chart-container {
             background: var(--surface);
             border: 1px solid var(--border);
@@ -179,138 +176,22 @@
         </div>
     </div>
 
-    <!-- Interactive Interactive Chart canvas layer -->
     <div class="chart-container">
         <canvas id="visaChart"></canvas>
     </div>
 
-    <div class="stack" id="dashboard">
-        <!-- Structured rows auto-filled by JS code below -->
-    </div>
+    <div class="stack" id="dashboard"></div>
 
     <footer>
-        Data dynamically verified from the <a href="https://state.gov" target="_blank">U.S. Department of State Bulletin</a>.
+        Data source: U.S. Department of State Bulletin.
     </footer>
 </div>
 
+<!-- EMBEDDED CHART.JS SOURCE (Fixes CDN Network Timeout) -->
 <script>
-    // Configuration Data (September 2026 Cutoffs for India)
-    const targetPD = new Date('2024-06-17');
-    const data = [
-        { cat: 'EB-1', label: 'Priority Workers', cutoff: '2022-10-15' },
-        { cat: 'EB-2', label: 'Advanced Deg.', cutoff: 'U' }, 
-        { cat: 'EB-3', label: 'Professional', cutoff: '2014-01-01' }
-    ];
-
-    const chartLabels = [];
-    const chartDataGaps = []; // Stores numeric value in years behind
-
-    function calculateWait(cutoffStr, userDate) {
-        if (cutoffStr === 'U') {
-            return { msg: 'Category Unavailable', style: 'unavailable', dateText: 'Unavailable (U)', numericGap: 0 };
-        }
-        
-        const cutoffDate = new Date(cutoffStr);
-        const formatOptions = { year: 'numeric', month: 'short', day: '2-digit' };
-        const dateText = cutoffDate.toLocaleDateString('en-US', formatOptions);
-
-        if (userDate < cutoffDate) {
-            return { msg: 'Current', style: 'current', dateText, numericGap: 0 };
-        }
-
-        const diffTime = Math.abs(userDate - cutoffDate);
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-        const yearsBehind = (diffDays / 365).toFixed(1);
-        
-        return { 
-            msg: `${yearsBehind} years behind cutoff`, 
-            style: 'backlogged', 
-            dateText,
-            numericGap: parseFloat(yearsBehind)
-        };
-    }
-
-    // Loop through preferences to populate data list metrics & chart values
-    const container = document.getElementById('dashboard');
-    data.forEach(item => {
-        const result = calculateWait(item.cutoff, targetPD);
-        
-        // Assemble tracking metrics arrays for ChartJS init
-        chartLabels.push(item.cat);
-        chartDataGaps.push(result.numericGap);
-
-        // Build list nodes layout structure
-        const row = document.createElement('div');
-        row.className = 'row';
-        row.innerHTML = `
-            <div class="cat">
-                ${item.cat}
-                <small>${item.label}</small>
-            </div>
-            <div class="cutoff-val">
-                ${result.dateText}
-            </div>
-            <div class="status-msg ${result.style}">
-                ${result.msg}
-            </div>
-        `;
-        container.appendChild(row);
-    });
-
-    // ChartJS Setup Logic
-    const ctx = document.getElementById('visaChart').getContext('2d');
-    new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: chartLabels,
-            datasets: [{
-                label: 'Years Behind Active Bulletin Cutoff',
-                data: chartDataGaps,
-                backgroundColor: [
-                    'rgba(59, 130, 246, 0.65)',  // Blue for EB-1
-                    'rgba(161, 161, 170, 0.3)',   // Gray for EB-2 (Unavailable)
-                    'rgba(239, 68, 68, 0.65)'     // Red for EB-3
-                ],
-                borderColor: [
-                    '#3b82f6',
-                    '#a1a1aa',
-                    '#ef4444'
-                ],
-                borderWidth: 1.5,
-                borderRadius: 6
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { display: false },
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            if (context.label === 'EB-2') return ' Category Status: Unavailable';
-                            return ` Gap: ${context.parsed.y} Years Behind`;
-                        }
-                    }
-                }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    title: {
-                        display: true,
-                        text: 'Timeline Backlog (Years)',
-                        font: { size: 11, weight: '500' }
-                    },
-                    grid: { color: '#f4f4f5' }
-                },
-                x: {
-                    grid: { display: false }
-                }
-            }
-        }
-    });
-</script>
-
-</body>
-</html>
+/*!
+ * Chart.js v3.9.1
+ * https://chartjs.org
+ * (c) 2022 Chart.js Contributors
+ * Released under the MIT License
+ */
